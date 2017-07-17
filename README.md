@@ -22,4 +22,4 @@ Check the [official fpdf documentation](https://pyfpdf.readthedocs.io/en/latest/
 
 ## Run ##
 
-`$ python crawler.py`
+`$ python download_manga.py`
