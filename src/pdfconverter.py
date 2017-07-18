@@ -7,8 +7,8 @@ from fpdf import FPDF
 from PIL import Image
 
 def to_pdf(volume, manganame):
-    volume = "Volume " + volume
-    print "[ " + volume + " ] Converting all pictures downloaded to pdf"
+    volume = "Volume_" + volume
+    print "[  " + volume + "  ] Converting all pictures downloaded to pdf"
 
     folder = os.path.join("../tmp/")
     lista = os.listdir(folder)
@@ -24,9 +24,9 @@ def to_pdf(volume, manganame):
 
         pdf.output(os.path.join("../downloaded/") + manganame + volume + ".pdf", "F")
 
-        print "[ " + volume + " ] Concluded with success."
-        print "[ " + volume + " ] The pdf is inside your downloaded folder."
-        print "[ " + volume + " ] Deleting all images in tmp folder...",
+        print "[  " + volume + "  ] Concluded with success."
+        print "[  " + volume + "  ] The pdf is inside your downloaded folder."
+        print "[  " + volume + "  ] Deleting all images in tmp folder...",
 
         for img in lista:
             os.remove(folder + img)

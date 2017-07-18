@@ -9,98 +9,83 @@ import re
 from bs4 import BeautifulSoup
 from pdfconverter import to_pdf
 
-def download(url, number):
-    urllib.urlretrieve(url, os.path.join("../tmp/", number + ".jpg"))
+def checkFolder():
+    if not os.path.isdir(os.path.join("../tmp/")):
+        print "nao tem tmp folder"
+    if not os.path.isdir(os.path.join("../downloaded/")):
+        print "nao tem downloaded folder"
 
-def downloadPages(url, value, number):
-    link_page = url + value + ".html"
-    chapter_page = requests.get(link_page).content
-    soup_page = BeautifulSoup(chapter_page, 'html.parser')
-    image = soup_page.find(id="image")
-    url = image.get("src")
-    download(url, number)
+def checkVolumesDownloaded(manganame):
+    folder = os.path.join("../downloaded/")
+    volumes = os.listdir(folder)
 
-def main():
+    for volume in volumes:
+        if manganame not in volume:
+            volumes.remove(volume)
+
+    return volumes
+
+def downloadPages(url, chapterpage, volumepage):
+    try:
+        link_page = url + chapterpage + ".html"
+        chapter_page = requests.get(link_page).content
+        soup_page = BeautifulSoup(chapter_page, 'html.parser')
+        image = soup_page.find(id="image")
+        url = image.get("src")
+        urllib.urlretrieve(url, os.path.join("../tmp/", str(volumepage) + ".jpg"))
+        return True
+    except:
+        return False
+
+def crawler():
     
     manganame = "Hunter_x_Hunter_"
     mangalink = "http://mangafox.me/manga/hunter_x_hunter/"
     manga = requests.get(mangalink).content            
     soup = BeautifulSoup(manga, 'html.parser')
 
-    # Find all volumes, but exclude the not complete "TBD" volume
-    # for line in soup.findAll("div", { "class" : "slide" }):
-    #     volume = line.text
-        
-    #     if "TBD" in volume:
-    #         continue
-
-    #     print volume
-    #     print re.findall(r'\d+', volume)
-
-    chapters = []
+    allchapters = []
     volumes = soup.find(id="chapters")
-    print"[ Volume 1 ] started"
     for chap in volumes.find_all("a", { "class" : "tips" }):
-        #print re.findall(r'\d+', chapters.text)
-        chapters.insert(0, chap.get("href"))
+        #print re.findall(r'\d+', allchapters.text)
+        allchapters.insert(0, chap.get("href"))
 
-    vol = re.findall(r"v(\d+)", chapters[0])
-    counter = 1
-    for chapter in chapters:
-        if re.findall(r"v(\d+)", chapter) == vol:
-            print "  [ Download ] from", chapter        
+    while allchapters:
+        linkstodownload = []
+        volumetodownload = re.findall(r"v(\w+)", allchapters[0])
+        i = 0
+        
+        if volumetodownload[0] != "TBD": 
+            while re.findall(r"v(\w+)", allchapters[i]) == volumetodownload:
+                linkstodownload.append(allchapters[i])
+                i = i + 1
+
+            for i in linkstodownload:
+                allchapters.remove(i)
+        else:
+            linkstodownload = allchapters
+            allchapters = []
+
+        print "[  Volume", volumetodownload[0], " ] Started"       
+        
+        numberofpages = 1
+        for chapter in linkstodownload:
+            print " | Download | From", chapter
             
             manga = requests.get(chapter).content            
             soup = BeautifulSoup(manga, 'html.parser')
-
             # Download all pages from volume
             for pages in soup.findAll("option"):
                 if pages['value'] == '0' :
                     break
-                #print 'value: {}, text: {}'.format(pages['value'], pages.text)
-                downloadPages(chapter[:-6], pages.text, str(counter))
-                counter = counter + 1
-        else:
-            
-            if not vol:
-                to_pdf("TBD", manganame)
-                print "[ Volume TBD ] started"
-            else:    
-                to_pdf(vol[0], manganame)
-                print "[ Volume", vol[0]+1, "] started"
-           
-            vol = re.findall(r"v(\d+)", chapter)
-            
-            counter = 1     
-            print "  [ Download ] from", chapter
+                #print 'value: {}, text: {} , np: {}'.format(pages['value'], pages.text, numberofpages)
+                downloadsucess = False
+                while downloadsucess == False: 
+                    downloadsucess = downloadPages(chapter[:-6], pages.text, numberofpages)
+                numberofpages = numberofpages + 1
 
-    
-
-
-    # #print re.findall(r'\b\d+([\.,]\d+)?', volume)   
-    # vol, inicial,final = re.findall(r'\d+', volume)   
-    # volume = "Volume " + vol
-
-    # #print volume, inicial, final
-    # print "[" + volume + "] started"
-
-    # counter = 1
-    # for chapter in range(int(inicial),int(final) + 1):
-    #     print "Downloading jpgs from chapter", str(chapter)
-        
-    #     link = "http://mangafox.me/manga/hunter_x_hunter/v01/c" + str(chapter) + "/1.html"
-    #     manga = requests.get(link).content            
-    #     soup = BeautifulSoup(manga, 'html.parser')
-
-    #     # Download all pages from volume
-    #     for pages in soup.findAll("option"):
-    #         if pages['value'] == '0' :
-    #             break
-    #         #print 'value: {}, text: {}'.format(pages['value'], pages.text)
-    #         downloadPages(link[:-6], pages.text, str(counter))
-    #         counter = counter + 1
-
-    # to_pdf(volume, manganame)
+        to_pdf(volumetodownload[0], manganame)        
 
 if __name__ == "__main__":
-	main()
+    checkFolder()
+    crawler()
