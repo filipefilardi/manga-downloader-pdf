@@ -66,25 +66,30 @@ def crawler():
             linkstodownload = allchapters
             allchapters = []
 
-        print "[  Volume", volumetodownload[0], " ] Started"       
-        
-        numberofpages = 1
-        for chapter in linkstodownload:
-            print " | Download | From", chapter
-            
-            manga = requests.get(chapter).content            
-            soup = BeautifulSoup(manga, 'html.parser')
-            # Download all pages from volume
-            for pages in soup.findAll("option"):
-                if pages['value'] == '0' :
-                    break
-                #print 'value: {}, text: {} , np: {}'.format(pages['value'], pages.text, numberofpages)
-                downloadsucess = False
-                while downloadsucess == False: 
-                    downloadsucess = downloadPages(chapter[:-6], pages.text, numberofpages)
-                numberofpages = numberofpages + 1
 
-        to_pdf(volumetodownload[0], manganame)        
+        mangaga = manganame + "Volume_" + volumetodownload[0] + ".pdf"        
+        alreadydownloaded = checkVolumesDownloaded(manganame)
+        if mangaga in alreadydownloaded:
+            print "[  Volume", volumetodownload[0], " ] Is already in your folder downloaded"       
+        else:
+            print "[  Volume", volumetodownload[0], " ] Started"       
+            numberofpages = 1
+            for chapter in linkstodownload:
+                print " | Download | From", chapter
+                
+                manga = requests.get(chapter).content            
+                soup = BeautifulSoup(manga, 'html.parser')
+                # Download all pages from volume
+                for pages in soup.findAll("option"):
+                    if pages['value'] == '0' :
+                        break
+                    #print 'value: {}, text: {} , np: {}'.format(pages['value'], pages.text, numberofpages)
+                    downloadsucess = False
+                    while downloadsucess == False: 
+                        downloadsucess = downloadPages(chapter[:-6], pages.text, numberofpages)
+                    numberofpages = numberofpages + 1
+
+            to_pdf(volumetodownload[0], manganame)        
 
 if __name__ == "__main__":
     checkFolder()
