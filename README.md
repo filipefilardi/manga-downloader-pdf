@@ -6,7 +6,7 @@ The crawler script will download all volumes available in [Manga Fox](http://man
 
 This script was made with no money intentions. I just want to provide a different option to read mangas offline and take no credits for creation, editing, publishing or hosting the images downloaded.
 
-Don't forget to support the mangaka and [Manga Fox](http://mangafox.me/directory/) in any way you can.
+Don't forget to support the mangaka and Manga Fox in any way you can.
 
 Feel free to contribute with the project in any way.
 
@@ -37,9 +37,11 @@ Check [official fpdf documentation](https://pyfpdf.readthedocs.io/en/latest/) if
 
 ## Usage ##
 
-This version is limited. You should change the url in [this line](https://github.com/filipefilardi/manga-downloader/blob/master/src/download_manga.py#L111) to your manga url hosted on Manga Fox. The script will do the rest.
+This version is limited. You should change the url in [this line](https://github.com/filipefilardi/manga-downloader/blob/master/src/download_manga.py#L111) to your manga url hosted on Manga Fox and run.
 
-At this point, the source-code has only been tested on Linux with python 2.
+Your pdf volumes will be inside downloaded folder.
+
+The source-code has only been tested on Linux with python 2.
 
 ## Run ##
 
