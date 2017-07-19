@@ -22,7 +22,7 @@ def to_pdf(volume, manganame):
             pdf.add_page()
             pdf.image(folder + img, 0, 0)
 
-        pdf.output(os.path.join("../downloaded/") + manganame + volume + ".pdf", "F")
+        pdf.output(os.path.join("../downloaded/") + manganame + "_" + volume + ".pdf", "F")
 
         print "[  " + volume + "  ] Concluded with success."
         print "[  " + volume + "  ] The pdf is inside your downloaded folder."

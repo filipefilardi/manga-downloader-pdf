@@ -9,11 +9,27 @@ import re
 from bs4 import BeautifulSoup
 from pdfconverter import to_pdf
 
+TESTE = "TESTE" 
+
+DIR_DOWNLOADED = os.path.join("../downloaded/")
+DIR_TEMP = os.path.join("../tmp/")
+
 def checkFolder():
-    if not os.path.isdir(os.path.join("../tmp/")):
-        print "nao tem tmp folder"
-    if not os.path.isdir(os.path.join("../downloaded/")):
-        print "nao tem downloaded folder"
+    print "Checking dependencies..."
+    if not os.path.isdir(DIR_TEMP):
+        print"Creating tmp folder"
+        os.makedirs(DIR_TEMP)
+    else:
+        # Delete all files in tmp folder to avoid misunderstanding during pdf creation
+        files = os.listdir(DIR_TEMP)
+        if files:
+            print "Deleting all files inside tmp folder"
+            for file in files:
+                os.remove(DIR_TEMP + file)
+
+    if not os.path.isdir(DIR_DOWNLOADED):
+        print "Creating downloaded folder"
+        os.makedirs(DIR_DOWNLOADED)
 
 def checkVolumesDownloaded(manganame):
     folder = os.path.join("../downloaded/")
@@ -37,10 +53,8 @@ def downloadPages(url, chapterpage, volumepage):
     except:
         return False
 
-def crawler():
+def crawler(manganame, mangalink):
     
-    manganame = "Hunter_x_Hunter_"
-    mangalink = "http://mangafox.me/manga/hunter_x_hunter/"
     manga = requests.get(mangalink).content            
     soup = BeautifulSoup(manga, 'html.parser')
 
@@ -67,9 +81,9 @@ def crawler():
             allchapters = []
 
 
-        mangaga = manganame + "Volume_" + volumetodownload[0] + ".pdf"        
+        volume = manganame + "_Volume_" + volumetodownload[0] + ".pdf"        
         alreadydownloaded = checkVolumesDownloaded(manganame)
-        if mangaga in alreadydownloaded:
+        if volume in alreadydownloaded:
             print "[  Volume", volumetodownload[0], " ] Is already in your folder downloaded"       
         else:
             print "[  Volume", volumetodownload[0], " ] Started"       
@@ -89,8 +103,17 @@ def crawler():
                         downloadsucess = downloadPages(chapter[:-6], pages.text, numberofpages)
                     numberofpages = numberofpages + 1
 
-            to_pdf(volumetodownload[0], manganame)        
+            to_pdf(volumetodownload[0], manganame)     
 
 if __name__ == "__main__":
+    
+    # For this version you need to edit this link
+    mangalink = "http://mangafox.me/manga/onepunch_man/"
+    
     checkFolder()
-    crawler()
+    
+    manganame = mangalink.replace("http://mangafox.me/manga/","")
+    manganame = manganame[:-1]
+    manganame = manganame.title()
+    
+    crawler(manganame, mangalink)
