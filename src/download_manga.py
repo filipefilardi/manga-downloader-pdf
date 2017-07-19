@@ -108,12 +108,12 @@ def crawler(manganame, mangalink):
 if __name__ == "__main__":
     
     # For this version you need to edit this link
-    mangalink = "http://mangafox.me/manga/onepunch_man/"
+    mangalink = "http://mangafox.me/manga/hunter_x_hunter/"
     
     checkFolder()
     
     manganame = mangalink.replace("http://mangafox.me/manga/","")
-    manganame = manganame[:-1]
+    manganame = manganame.replace("/","")
     manganame = manganame.title()
-    
+
     crawler(manganame, mangalink)
