@@ -1,6 +1,6 @@
 # manga-downloader-pdf
 
-Manga downloader made in python to create pdf volumes.
+Manga downloader made in python to create pdf volumes. The pdfs has been tested on kindle and it's working.
 
 The crawler script will download all volumes available in [Manga Fox](http://mangafox.me/directory/) from a choosed manga ([example](http://mangafox.me/manga/hunter_x_hunter/)) and convert each volume in pdf.
 
@@ -51,5 +51,5 @@ The source-code has only been tested on Linux with python 2.
 
 ## Next Features ## 
  
- * Make the downlaod via manga name string 100% functional with no issues;
+ * Make the download via manga name string 100% functional with no issues;
  * Convert the jpgs to differents formats;
