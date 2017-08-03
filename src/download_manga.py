@@ -55,6 +55,8 @@ def downloadPages(url, chapterpage, volumepage):
 
 def crawler(manganame, mangalink):
     
+    checkFolder()
+
     manga = requests.get(mangalink).content            
     soup = BeautifulSoup(manga, 'html.parser')
 
@@ -105,15 +107,60 @@ def crawler(manganame, mangalink):
 
             to_pdf(volumetodownload[0], manganame)     
 
-if __name__ == "__main__":
-    
-    # For this version you need to edit this link
-    mangalink = "http://mangafox.me/manga/hunter_x_hunter/"
-    
-    checkFolder()
-    
+def manuallyMode():
+    mangalink = raw_input('Enter your mangafox link: ')
+        
     manganame = mangalink.replace("http://mangafox.me/manga/","")
     manganame = manganame.replace("/","")
     manganame = manganame.title()
 
-    crawler(manganame, mangalink)
+    crawler(manganame, mangalink)    
+
+def options():
+    option = raw_input('\n[MANGA DOWNLOADER PDF]\n\n[1] Type manga name\n[2] Manually insert url\n\nor anything else to exit:\n\n')
+    
+    if option == '1':
+        
+        manganame = raw_input('Manga to download: ')
+
+        manganame = manganame.lower().strip().replace(' ', '_')
+        mangalink = 'http://mangafox.me/manga/%s/' % manganame
+
+        manga = requests.get(mangalink).content            
+        soup = BeautifulSoup(manga, 'html.parser')
+
+        if soup.title.text == "Search for  Manga at Manga Fox - Page 0":
+            restart = raw_input('Manga not found! Do you wanna try again? (Y/N) ')
+            if restart.lower() == 'n' :
+                manuallyMode()
+            else:
+                options()
+        else:
+            title = soup.title.text
+            title = title.split(' - ', 1)
+
+            response = raw_input('Do you want to download {}? (Y/N) '.format(title[0]))
+            if response.lower() == 'y':
+                manganame = title[0].replace(' Manga', '')
+                manganame = manganame.strip().replace(' ', '_')
+                crawler(manganame, mangalink)        
+            else:
+                options()
+
+    if option == '2':
+        manuallyMode()
+    else:
+        return
+
+if __name__ == "__main__":
+    
+    options()
+
+    # # For this version you need to edit this link
+    # mangalink = "http://mangafox.me/manga/hunter_x_hunter/"
+    
+    # manganame = mangalink.replace("http://mangafox.me/manga/","")
+    # manganame = manganame.replace("/","")
+    # manganame = manganame.title()
+
+    # crawler(manganame, mangalink)
